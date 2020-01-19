@@ -20,7 +20,9 @@ namespace PolynomialWindowsForms
 
             Polynomial c = a / b;
 
-            MessageBox.Show(a + "\n" + b + "\n" + c);
+            MessageBox.Show(b + " = " + b.PointCalc(5).ToString());
+
+            a.PointCalc(5);
 
         }
     }

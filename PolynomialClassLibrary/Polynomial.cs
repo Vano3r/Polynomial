@@ -41,16 +41,24 @@ namespace PolynomialClassLibrary
                 if (item.Coefficient == 0)
                     result += "";
 
-                else if (Math.Abs(item.Coefficient) == 1)
+                else if (item.Coefficient == 1)
                 {
                     if (item.Power == 1)
-                        result += String.Format("X + ", item.Coefficient);
+                        result += String.Format("X + ");
                     else if (item.Power == 0)
                         result += String.Format("{0}", item.Coefficient);
                     else
                         result += String.Format("X^{1} + ", item.Coefficient, item.Power);
                 }
-
+                else if (item.Coefficient == -1)
+                {
+                    if (item.Power == 1)
+                        result += String.Format("-X + ");
+                    else if (item.Power == 0)
+                        result += String.Format("{0}", item.Coefficient);
+                    else
+                        result += String.Format("X^{1} + ", item.Coefficient, item.Power);
+                }
                 else
                 {
                     if (item.Power == 1)
@@ -135,6 +143,17 @@ namespace PolynomialClassLibrary
             }
 
             return c;
+        }
+        public double PointCalc(int point)
+        {
+            double result = 0;
+
+            foreach (var item in listElements)
+            {
+                result += Math.Pow(point, item.Power) * item.Coefficient;
+            }
+
+            return result;
         }
     }
 }
