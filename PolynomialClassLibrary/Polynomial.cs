@@ -16,7 +16,7 @@ namespace PolynomialClassLibrary
             int power = coefficients.Length - 1;
 
             for (int i = 0; i < coefficients.Length; i++)
-                this.listElements.Add(new ElementPolynomial { Coefficient = coefficients[i], Power = power - i });
+                listElements.Add(new ElementPolynomial { Coefficient = coefficients[i], Power = power - i });
         }
 
         public Polynomial(Polynomial a)
@@ -25,6 +25,11 @@ namespace PolynomialClassLibrary
 
             foreach (var item in a.listElements)
                 listElements.Add(new ElementPolynomial { Coefficient = item.Coefficient, Power = item.Power });
+        }
+        private Polynomial(int coefficient, int power)
+        {
+            listElements = new List<ElementPolynomial>();
+            listElements.Add(new ElementPolynomial { Coefficient = coefficient, Power = power });
         }
 
         public override string ToString()
@@ -35,6 +40,16 @@ namespace PolynomialClassLibrary
             {
                 if (item.Coefficient == 0)
                     result += "";
+
+                else if (item.Coefficient == 1)
+                {
+                    if (item.Power == 1)
+                        result += String.Format("X + ", item.Coefficient);
+                    else if (item.Power == 0)
+                        result += String.Format("{0}", item.Coefficient);
+                    else
+                        result += String.Format("X^{1} + ", item.Coefficient, item.Power);
+                }
 
                 else
                 {
@@ -58,9 +73,11 @@ namespace PolynomialClassLibrary
             Polynomial c = new Polynomial(a);
 
             foreach (var i in c.listElements)
+            {
                 foreach (var j in b.listElements)
                     if (i.Power == j.Power)
                         i.Coefficient += j.Coefficient;
+            }
 
             return c;
         }
@@ -69,10 +86,12 @@ namespace PolynomialClassLibrary
             Polynomial c = new Polynomial(a);
 
             foreach (var i in c.listElements)
+            {
                 foreach (var j in b.listElements)
                     if (i.Power == j.Power)
                         i.Coefficient -= j.Coefficient;
-
+            }
+                
             return c;
         }
         public static Polynomial operator *(Polynomial a, Polynomial b)
@@ -80,25 +99,44 @@ namespace PolynomialClassLibrary
             Polynomial c = new Polynomial();
 
             foreach (var i in a.listElements)
+            {
                 foreach (var j in b.listElements)
                     c.listElements.Add(new ElementPolynomial { Coefficient = i.Coefficient * j.Coefficient, Power = i.Power + j.Power });
+            }
+                
 
             for (int i = 0; i < c.listElements.Count; i++)
+            {
                 for (int j = i + 1; j < c.listElements.Count; j++)
-                {
-
                     if (c.listElements[i].Power == c.listElements[j].Power)
                     {
                         c.listElements[i].Coefficient += c.listElements[j].Coefficient;
                         c.listElements.RemoveAt(j);
                     }
-                }
-
+            }
+                
             return c;
         }
         public static Polynomial operator /(Polynomial a, Polynomial b)
         {
-            Polynomial c = new Polynomial(a);
+
+            int multPower = a.listElements[0].Power - b.listElements[0].Power;
+            int multСoeff = a.listElements[0].Coefficient / b.listElements[0].Coefficient;
+
+            Polynomial temp = a - b * new Polynomial(multСoeff, multPower);
+            Polynomial c = new Polynomial();
+
+            int numberZeroInList = 0;
+            foreach (var item in temp.listElements)
+            {
+                if (item.Coefficient == 0)
+                    numberZeroInList++;
+            }
+
+            if (numberZeroInList == temp.listElements.Count)
+            {
+                c.listElements.Add(new ElementPolynomial { Coefficient = multСoeff, Power = multPower });
+            }
 
             return c;
         }

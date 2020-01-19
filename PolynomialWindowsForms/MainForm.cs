@@ -15,9 +15,12 @@ namespace PolynomialWindowsForms
     {
         public MainForm()
         {
-            Polynomial a = new Polynomial(new int[] { 2, 3, 4, 5 });
+            Polynomial a = new Polynomial(new int[] { 1, 1, 2, 0, 1, 1, 2 });
+            Polynomial b = new Polynomial(new int[] { 1, 1, 2 });
 
-            MessageBox.Show(a.ToString());
+            Polynomial c = a / b;
+
+            MessageBox.Show(a.ToString() + "\n" + b.ToString() + "\n" + c.ToString());
 
         }
     }
