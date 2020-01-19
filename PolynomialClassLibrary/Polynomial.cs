@@ -19,7 +19,7 @@ namespace PolynomialClassLibrary
                 listElements.Add(new ElementPolynomial { Coefficient = coefficients[i], Power = power - i });
         }
 
-        public Polynomial(Polynomial a)
+        private Polynomial(Polynomial a)
         {
             listElements = new List<ElementPolynomial>();
 
@@ -41,7 +41,7 @@ namespace PolynomialClassLibrary
                 if (item.Coefficient == 0)
                     result += "";
 
-                else if (item.Coefficient == 1)
+                else if (Math.Abs(item.Coefficient) == 1)
                 {
                     if (item.Power == 1)
                         result += String.Format("X + ", item.Coefficient);
@@ -119,23 +119,19 @@ namespace PolynomialClassLibrary
         }
         public static Polynomial operator /(Polynomial a, Polynomial b)
         {
-
-            int multPower = a.listElements[0].Power - b.listElements[0].Power;
-            int multСoeff = a.listElements[0].Coefficient / b.listElements[0].Coefficient;
-
-            Polynomial temp = a - b * new Polynomial(multСoeff, multPower);
+            int tempCoeff, tempPower;
             Polynomial c = new Polynomial();
 
-            int numberZeroInList = 0;
-            foreach (var item in temp.listElements)
+            int index = 0;
+            while (a.listElements[index].Power >= b.listElements[0].Power)
             {
-                if (item.Coefficient == 0)
-                    numberZeroInList++;
-            }
+                tempPower = a.listElements[index].Power - b.listElements[0].Power;
+                tempCoeff = a.listElements[index].Coefficient / b.listElements[0].Coefficient;
 
-            if (numberZeroInList == temp.listElements.Count)
-            {
-                c.listElements.Add(new ElementPolynomial { Coefficient = multСoeff, Power = multPower });
+                a -= b * new Polynomial(tempCoeff, tempPower);
+
+                c.listElements.Add(new ElementPolynomial { Coefficient = tempCoeff, Power = tempPower });
+                index ++;
             }
 
             return c;
