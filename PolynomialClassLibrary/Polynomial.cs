@@ -19,6 +19,15 @@ namespace PolynomialClassLibrary
                 listElements.Add(new ElementPolynomial { Coefficient = coefficients[i], Power = power - i });
         }
 
+        public Polynomial(List<int> coefficients)
+        {
+            listElements = new List<ElementPolynomial>();
+            int power = coefficients.Count - 1;
+
+            for (int i = 0; i < coefficients.Count; i++)
+                listElements.Add(new ElementPolynomial { Coefficient = coefficients[i], Power = power - i });
+        }
+
         private Polynomial(Polynomial a)
         {
             listElements = new List<ElementPolynomial>();
@@ -57,7 +66,7 @@ namespace PolynomialClassLibrary
                     else if (item.Power == 0)
                         result += String.Format("{0}", item.Coefficient);
                     else
-                        result += String.Format("X^{1} + ", item.Coefficient, item.Power);
+                        result += String.Format("-X^{1} + ", item.Coefficient, item.Power);
                 }
                 else
                 {
@@ -75,31 +84,105 @@ namespace PolynomialClassLibrary
             else
                 return result.Replace("+ -", "- ");
         }
+        public static bool operator >(Polynomial a, Polynomial b)
+        {
+            if (a.listElements[0].Power > b.listElements[0].Power)
+            {
+                return true;
+            }
 
+            else if (a.listElements[0].Power == b.listElements[0].Power)
+            {
+                for(int i = 0; i < a.listElements.Count; i++)
+                {
+                    if (a.listElements[i].Coefficient > b.listElements[i].Coefficient)
+                    {
+                        return true;
+                    }   
+                }
+            }
+            return false;
+        }
+
+        public static bool operator <(Polynomial a, Polynomial b)
+        {
+            if (a.listElements[0].Power < b.listElements[0].Power)
+            {
+                return true;
+            }
+
+            else if (a.listElements[0].Power == b.listElements[0].Power)
+            {
+                for (int i = 0; i < a.listElements.Count; i++)
+                {
+                    if (a.listElements[i].Coefficient < b.listElements[i].Coefficient)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         public static Polynomial operator +(Polynomial a, Polynomial b)
         {
-            Polynomial c = new Polynomial(a);
-
-            foreach (var i in c.listElements)
+            Polynomial c;
+            if (a > b)
             {
-                foreach (var j in b.listElements)
-                    if (i.Power == j.Power)
-                        i.Coefficient += j.Coefficient;
+                c = new Polynomial(a);
+                foreach (var i in c.listElements)
+                {
+                    foreach (var j in b.listElements)
+                    {
+                        if (i.Power == j.Power)
+                            i.Coefficient += j.Coefficient;
+                    }
+                }
+            }
+
+            else
+            {
+                c = new Polynomial(b);
+                foreach (var i in c.listElements)
+                {
+                    foreach (var j in a.listElements)
+                    {
+                        if (i.Power == j.Power)
+                            i.Coefficient += j.Coefficient;
+                    }
+                }
             }
 
             return c;
         }
         public static Polynomial operator -(Polynomial a, Polynomial b)
         {
-            Polynomial c = new Polynomial(a);
-
-            foreach (var i in c.listElements)
+            Polynomial c;
+            if (a > b)
             {
-                foreach (var j in b.listElements)
-                    if (i.Power == j.Power)
-                        i.Coefficient -= j.Coefficient;
+                c = new Polynomial(a);
+                foreach (var i in c.listElements)
+                {
+                    foreach (var j in b.listElements)
+                    {
+                        if (i.Power == j.Power)
+                            i.Coefficient -= j.Coefficient;
+                    }
+                }
             }
-                
+
+            else
+            {
+                c = b * -1;
+                foreach (var i in c.listElements)
+                {
+                    foreach (var j in a.listElements)
+                    {
+                        if (i.Power == j.Power)
+                            i.Coefficient += j.Coefficient;
+                    }     
+                }
+            }
+
             return c;
         }
         public static Polynomial operator *(Polynomial a, Polynomial b)
@@ -111,7 +194,6 @@ namespace PolynomialClassLibrary
                 foreach (var j in b.listElements)
                     c.listElements.Add(new ElementPolynomial { Coefficient = i.Coefficient * j.Coefficient, Power = i.Power + j.Power });
             }
-                
 
             for (int i = 0; i < c.listElements.Count; i++)
             {
@@ -122,7 +204,18 @@ namespace PolynomialClassLibrary
                         c.listElements.RemoveAt(j);
                     }
             }
-                
+
+            return c;
+        }
+        public static Polynomial operator *(Polynomial a, int b)
+        {
+            Polynomial c = new Polynomial();
+
+            foreach (var i in a.listElements)
+            {
+                c.listElements.Add(new ElementPolynomial { Coefficient = i.Coefficient * b, Power = i.Power });
+            }
+
             return c;
         }
         public static Polynomial operator /(Polynomial a, Polynomial b)
